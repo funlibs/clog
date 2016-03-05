@@ -3,3 +3,4 @@
 *.swp
 /.kdev4
 /cglm.kdev4
+/Makefile

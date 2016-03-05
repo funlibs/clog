@@ -22,7 +22,7 @@ static void clogLog(
 }
 
 
-void clogErrorCallback(
+void clogGLFWErrorCallback(
     int         error,
     const char* message)
 {

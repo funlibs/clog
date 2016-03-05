@@ -14,7 +14,7 @@
  * @fn clogErrorCallback(int error, const char* description)
  * @brief Error callback for use by GLFW. Print ERROR_CALLBACK message to STDERR.
  */
-void clogErrorCallback(
+void clogGLFWErrorCallback(
     int         error,
     const char* description);
 
