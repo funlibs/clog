@@ -27,6 +27,10 @@
 #include <stdio.h>
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /**
  * @file clog.h
  * @brief Logging utility.
@@ -65,5 +69,8 @@ void clogInfoMsg(const char* message);
  */
 void clogDebugMsg(const char* message);
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // CLOG_H
