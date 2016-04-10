@@ -25,6 +25,14 @@
 #define CLOG_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/**
+ * @mainpage
+ * Work in progress
+ * @todo Implement rotating file logger.
+ */
 
 
 #ifdef __cplusplus
@@ -36,41 +44,89 @@ extern "C" {
  * @brief Logging utility.
  */
 
+/**
+ */
+static void clogLog(
+    const char* head,
+    const char* body,
+    FILE*       out)
+{
+
+    char* formated = malloc((strlen(head) + strlen(body) + 2) * sizeof(char));
+
+    strcpy(formated, head);
+    strcat(formated, body);
+    strcat(formated, "\n");
+    strcat(formated, "\0");
+
+    fputs(formated, out);
+    free(formated);
+
+}
+
 
 /**
  * @fn clogErrorCallback(int error, const char* description)
  * @brief Error callback for use by GLFW. Print ERROR_CALLBACK message to STDERR.
  */
-void clogGLFWErrorCallback(
+static void clogGLFWErrorCallback(
     int         error,
-    const char* description);
+    const char* message)
+{
+    clogLog("ERROR_CALLBACK: ", message, stderr);
+}
 
 /**
  * @fn clogErrorMsg(const char* message)
  * @brief Print ERROR message to STDERR.
  */
-void clogErrorMsg(const char* message);
+static void clogErrorMsg(const char* message)
+{
+    clogLog("ERROR: ", message, stderr);
+}
+
 
 /**
  * @fn clogWarningMsg(const char* message)
  * @brief Print WARN message to STDOUT.
  */
-void clogWarningMsg(const char* message);
+static void clogWarningMsg(const char* message)
+{
+    clogLog("WARNING: ", message, stdout);
+}
+
 
 /**
  * @fn clogInfoMsg(const char* message)
  * @brief Print INFO message to STDOUT.
  */
-void clogInfoMsg(const char* message);
+static void clogInfoMsg(const char* message)
+{
+    clogLog("INFO: ", message, stdout);
+}
+
 
 /**
  * @fn clogDebugMsg(const char* message)
  * @brief Print DEBUG message to STDOUT.
  */
-void clogDebugMsg(const char* message);
+static void clogDebugMsg(const char* message)
+{
+#ifdef CLOG_DEBUG
+    clogLog("DEBUG: ", message, stdout);
+#endif
+}
+
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
 #endif // CLOG_H
+
+
+
+
+
+
+
