@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 /**
  * @mainpage
@@ -46,43 +47,54 @@ extern "C" {
 
 /**
  */
-static void clogLog(
-    const char* head,
-    const char* body,
-    FILE*       out)
+static int clogLog(
+    FILE        *out,
+    const char  *format,
+    va_list      args)
 {
 
-    char* formated = malloc((strlen(head) + strlen(body) + 2) * sizeof(char));
-
-    strcpy(formated, head);
-    strcat(formated, body);
-    strcat(formated, "\n");
-    strcat(formated, "\0");
-
-    fputs(formated, out);
-    free(formated);
+    return vfprintf(out, format, args);
 
 }
 
 
 /**
- * @fn clogErrorCallback(int error, const char* description)
- * @brief Error callback for use by GLFW. Print ERROR_CALLBACK message to STDERR.
  */
-static void clogGLFWErrorCallback(
-    int         error,
-    const char* message)
+static char* formatMessage(const char * level, const char * format)
 {
-    clogLog("ERROR_CALLBACK: ", message, stderr);
+
+    char* new_format = malloc(strlen(level) + strlen(format) + 2);
+
+    strcat(new_format, level);
+    strcat(new_format, format);
+
+    if(new_format[strlen(new_format) - 1] != '\n')
+        strcat(new_format, "\n");
+
+
+    return new_format;
+
 }
 
 /**
  * @fn clogErrorMsg(const char* message)
  * @brief Print ERROR message to STDERR.
  */
-static void clogErrorMsg(const char* message)
+static int clogErrorMsg(const char* format, ...)
 {
-    clogLog("ERROR: ", message, stderr);
+
+    char* new_format = formatMessage("ERROR: ", format);
+
+    int ret;
+    va_list args;
+
+    va_start(args, format);
+    ret = clogLog(stderr, new_format, args);
+    va_end(args);
+
+    free(new_format);
+    return ret;
+
 }
 
 
@@ -90,9 +102,21 @@ static void clogErrorMsg(const char* message)
  * @fn clogWarningMsg(const char* message)
  * @brief Print WARN message to STDOUT.
  */
-static void clogWarningMsg(const char* message)
+static int clogWarningMsg(const char* format, ...)
 {
-    clogLog("WARNING: ", message, stdout);
+
+    char* new_format = formatMessage("WARNING: ", format);
+
+    int ret;
+    va_list args;
+
+    va_start(args, format);
+    ret = clogLog(stdout, new_format, args);
+    va_end(args);
+
+    free(new_format);
+    return ret;
+
 }
 
 
@@ -100,9 +124,20 @@ static void clogWarningMsg(const char* message)
  * @fn clogInfoMsg(const char* message)
  * @brief Print INFO message to STDOUT.
  */
-static void clogInfoMsg(const char* message)
+static int clogInfoMsg(const char* format, ...)
 {
-    clogLog("INFO: ", message, stdout);
+
+    char* new_format = formatMessage("INFO: ", format);
+
+    int ret;
+    va_list args;
+    va_start(args, format);
+    ret = clogLog(stdout, new_format, args);
+    va_end(args);
+
+    free(new_format);
+    return ret;
+
 }
 
 
@@ -110,11 +145,28 @@ static void clogInfoMsg(const char* message)
  * @fn clogDebugMsg(const char* message)
  * @brief Print DEBUG message to STDOUT.
  */
-static void clogDebugMsg(const char* message)
+static int clogDebugMsg(const char* format, ...)
 {
 #ifdef CLOG_DEBUG
-    clogLog("DEBUG: ", message, stdout);
+
+    char* new_format = formatMessage("DEBUG: ", format);
+
+    int ret;
+    va_list args;
+
+    va_start(args, format);
+    ret = clogLog(stdout, new_format, args);
+    va_end(args);
+
+    free(new_format);
+    return ret;
+
+#else
+
+    return 0;
+
 #endif
+
 }
 
 
