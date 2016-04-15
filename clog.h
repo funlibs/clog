@@ -120,7 +120,7 @@ static int clogConfigure(const char* filepath)
 
     atexit(clogTerminate);
 
-    if (stdout != CLOG_OUT) fclose(CLOG_OUT);
+    if (NULL != CLOG_OUT) fclose(CLOG_OUT);
 
     FILE* logFile = fopen(filepath, "a");
 
