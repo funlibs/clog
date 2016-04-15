@@ -3,10 +3,15 @@ project (CLOG)
 
 include_directories (.)
 
+add_library (clog STATIC clog.h clog.c)
+
 # Tests
 add_executable (clog_test
   clog_test.c
-  clog.h)
+  clog.h
+  clog.c)
+
+target_link_libraries (clog_test clog)
 
 enable_testing()
 add_test (NAME Main          COMMAND clog_test)
