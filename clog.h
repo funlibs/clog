@@ -53,7 +53,7 @@ extern "C" {
  * @def clogError(format, args ...)
  * Log an error message. Format and args are similar to the printf() function
  * @param format format send to printf
- * @param args variable size arguments send to printf
+ * @param args variable size arguments send to printf or NULL if undefined
  */
 #define clogError(format, args ...) {\
     clogLog("ERROR", __FILE__, __LINE__, format, args);\
@@ -64,7 +64,7 @@ extern "C" {
  * @def clogWarning(format, args ...)
  * Log a warning message. Format and args are similar to the printf() function
  * @param format format send to printf
- * @param args variable size arguments send to printf
+ * @param args variable size arguments send to printf or NULL.
  */
 #define clogWarning(format, args ...) {\
     clogLog("WARNING", __FILE__, __LINE__, format, args);\
@@ -75,7 +75,7 @@ extern "C" {
  * @def clogInfo(format, args ...)
  * Log a info message. Format and args are similar to the printf() function
  * @param format format send to printf
- * @param args variable size arguments send to printf
+ * @param args variable size arguments send to printf or NULL.
  */
 #define clogInfo(format, args ...) {\
     clogLog("INFO", __FILE__, __LINE__, format, args);\
@@ -86,7 +86,7 @@ extern "C" {
  * @def clogDebug(format, args ...)
  * Log a debug message. Format and args are similar to the printf() function
  * @param format format send to printf
- * @param args variable size arguments send to printf
+ * @param args variable size arguments send to printf or NULL.
  */
 #ifdef CLOG_DEBUG
 #define clogDebug(format, args ...) {\
@@ -115,7 +115,7 @@ static void clogTerminate()
  * @param filepath the full file name to write on.
  * @returns 0 if succeed, 1 if the file cannot be opened.
  */
-int clogConfigure(const char* filepath)
+static int clogConfigure(const char* filepath)
 {
 
     atexit(clogTerminate);
