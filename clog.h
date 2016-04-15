@@ -96,19 +96,82 @@ extern "C" {
 #define clogDebug(format, ...) {}
 #endif
 
+FILE* CLOG_OUT;
+
+/**
+ * @brief For internal use only.
+ */
+static void clogTerminate()
+{
+
+    if (NULL != CLOG_OUT) fclose(CLOG_OUT);
+
+}
+
+
 /**
  * @brief Specify a file insteed of STDOUT to log messages.
  * Set filePath as the destination for logs.
  * @param filepath the full file name to write on.
  * @returns 0 if succeed, 1 if the file cannot be opened.
  */
-int clogConfigure(const char* filepath);
+static int clogConfigure(const char* filepath)
+{
 
-int clogLog(
+    atexit(clogTerminate);
+
+    if (stdout != CLOG_OUT) fclose(CLOG_OUT);
+
+    FILE* logFile = fopen(filepath, "a");
+
+    if (NULL == logFile)
+        return 1;
+    else
+        CLOG_OUT = logFile;
+
+}
+
+/**
+ * @brief For internal use only.
+ */
+static int clogLog(
         char* level,
         char* file,
         int   line,
-        const char* format, ...);
+        const char* format, ...)
+{
+
+
+    FILE* out;
+    if (NULL != CLOG_OUT) {
+
+        out = CLOG_OUT;
+
+    } else {
+
+        out = stdout;
+
+    }
+
+    time_t timer;
+    time(&timer);
+
+    char timeBuffer[30];
+    strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
+
+    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, basename(file), line); 
+
+
+    va_list args;
+    int ret;
+
+    va_start(args, format);
+    ret = vfprintf(out, format, args);
+    va_end(args);
+
+    return ret;
+
+}
 
 #ifdef __cplusplus
 }
