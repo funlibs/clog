@@ -21,6 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+/**
+ * @file clog.h
+ * @brief Logging utility.
+ */
+
 #ifndef CLOG_H
 #define CLOG_H
 
@@ -28,157 +34,148 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <libgen.h>
+#include <time.h>
 
 /**
  * @mainpage
- * Work in progress
- * @todo Implement rotating file logger.
+ * See clog.h for documentation.
  */
+
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-/**
- * @file clog.h
- * @brief Logging utility.
- */
 
 /**
+ * @def clogError(format, args ...)
+ * Log an error message. Format and args are similar to the printf() function
+ * @param format format send to printf
+ * @param args variable size arguments send to printf
  */
-static int clogLog(
-    FILE        *out,
-    const char  *format,
-    va_list      args)
-{
-
-    return vfprintf(out, format, args);
-
+#define clogError(format, args ...) {\
+    clogLog("ERROR", __FILE__, __LINE__, format, args);\
 }
 
 
 /**
+ * @def clogWarning(format, args ...)
+ * Log a warning message. Format and args are similar to the printf() function
+ * @param format format send to printf
+ * @param args variable size arguments send to printf
  */
-static char* formatMessage(const char * level, const char * format)
-{
-
-    char* new_format = malloc(strlen(level) + strlen(format) + 2);
-
-    strcat(new_format, level);
-    strcat(new_format, format);
-
-    if(new_format[strlen(new_format) - 1] != '\n')
-        strcat(new_format, "\n");
-
-
-    return new_format;
-
-}
-
-/**
- * @fn clogErrorMsg(const char* message)
- * @brief Print ERROR message to STDERR.
- */
-static int clogErrorMsg(const char* format, ...)
-{
-
-    char* new_format = formatMessage("ERROR: ", format);
-
-    int ret;
-    va_list args;
-
-    va_start(args, format);
-    ret = clogLog(stderr, new_format, args);
-    va_end(args);
-
-    free(new_format);
-    return ret;
-
+#define clogWarning(format, args ...) {\
+    clogLog("WARNING", __FILE__, __LINE__, format, args);\
 }
 
 
 /**
- * @fn clogWarningMsg(const char* message)
- * @brief Print WARN message to STDOUT.
+ * @def clogInfo(format, args ...)
+ * Log a info message. Format and args are similar to the printf() function
+ * @param format format send to printf
+ * @param args variable size arguments send to printf
  */
-static int clogWarningMsg(const char* format, ...)
-{
-
-    char* new_format = formatMessage("WARNING: ", format);
-
-    int ret;
-    va_list args;
-
-    va_start(args, format);
-    ret = clogLog(stdout, new_format, args);
-    va_end(args);
-
-    free(new_format);
-    return ret;
-
+#define clogInfo(format, args ...) {\
+    clogLog("INFO", __FILE__, __LINE__, format, args);\
 }
 
 
 /**
- * @fn clogInfoMsg(const char* message)
- * @brief Print INFO message to STDOUT.
+ * @def clogDebug(format, args ...)
+ * Log a debug message. Format and args are similar to the printf() function
+ * @param format format send to printf
+ * @param args variable size arguments send to printf
  */
-static int clogInfoMsg(const char* format, ...)
-{
-
-    char* new_format = formatMessage("INFO: ", format);
-
-    int ret;
-    va_list args;
-    va_start(args, format);
-    ret = clogLog(stdout, new_format, args);
-    va_end(args);
-
-    free(new_format);
-    return ret;
-
-}
-
-
-/**
- * @fn clogDebugMsg(const char* message)
- * @brief Print DEBUG message to STDOUT.
- */
-static int clogDebugMsg(const char* format, ...)
-{
 #ifdef CLOG_DEBUG
-
-    char* new_format = formatMessage("DEBUG: ", format);
-
-    int ret;
-    va_list args;
-
-    va_start(args, format);
-    ret = clogLog(stdout, new_format, args);
-    va_end(args);
-
-    free(new_format);
-    return ret;
-
+#define clogDebug(format, args ...) {\
+    clogLog("DEBUG", __FILE__, __LINE__, format, args);\
+}
 #else
-
-    return 0;
-
+#define clogDebug(format, ...) {}
 #endif
 
+FILE* CLOG_OUT;
+
+/**
+ * @brief For internal use only.
+ */
+static void clogTerminate()
+{
+
+    if (NULL != CLOG_OUT) fclose(CLOG_OUT);
+
 }
 
+
+/**
+ * @brief Specify a file insteed of STDOUT to log messages.
+ * Set filePath as the destination for logs.
+ * @param filepath the full file name to write on.
+ * @returns 0 if succeed, 1 if the file cannot be opened.
+ */
+int clogConfigure(const char* filepath)
+{
+
+    atexit(clogTerminate);
+
+    if (stdout != CLOG_OUT) fclose(CLOG_OUT);
+
+    FILE* logFile = fopen(filepath, "a");
+
+    if (NULL == logFile)
+        return 1;
+    else
+        CLOG_OUT = logFile;
+
+}
+
+/**
+ * @brief For internal use only.
+ */
+static int clogLog(
+        char* level,
+        char* file,
+        int   line,
+        const char* format, ...)
+{
+
+
+    FILE* out;
+    if (NULL != CLOG_OUT) {
+
+        out = CLOG_OUT;
+
+    } else {
+
+        out = stdout;
+
+    }
+
+    time_t timer;
+    time(&timer);
+
+    char timeBuffer[30];
+    strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
+
+    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, basename(file), line); 
+
+
+    va_list args;
+    int ret;
+
+    va_start(args, format);
+    ret = vfprintf(out, format, args);
+    va_end(args);
+
+    return ret;
+
+}
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
 #endif // CLOG_H
-
-
-
-
-
-
 
