@@ -44,11 +44,6 @@
 
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
-
 /**
  * @def clogError(format, args ...)
  * Log an error message. Format and args are similar to the printf() function
@@ -97,6 +92,11 @@ extern "C" {
 #endif
 
 FILE* CLOG_OUT;
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /**
  * @brief For internal use only.
