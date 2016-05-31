@@ -129,6 +129,8 @@ static int clogConfigure(const char* filepath)
     else
         CLOG_OUT = logFile;
 
+    return 0;
+
 }
 
 /**
