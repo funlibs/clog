@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <libgen.h>
 #include <time.h>
 
 /**
@@ -161,7 +160,7 @@ static int clogLog(
     char timeBuffer[30];
     strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
 
-    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, basename(file), line); 
+    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, file, line); 
 
 
     va_list args;
