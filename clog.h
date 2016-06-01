@@ -49,7 +49,7 @@
  * @param format format send to printf
  * @param args variable size arguments send to printf or NULL if undefined
  */
-#define clogError(format, args ...) {\
+#define clogError(format, args, ...) {\
     clogLog("ERROR", __FILE__, __LINE__, format, args);\
 }
 
@@ -60,7 +60,7 @@
  * @param format format send to printf
  * @param args variable size arguments send to printf or NULL.
  */
-#define clogWarning(format, args ...) {\
+#define clogWarning(format, args, ...) {\
     clogLog("WARNING", __FILE__, __LINE__, format, args);\
 }
 
@@ -71,7 +71,7 @@
  * @param format format send to printf
  * @param args variable size arguments send to printf or NULL.
  */
-#define clogInfo(format, args ...) {\
+#define clogInfo(format, args, ...) {\
     clogLog("INFO", __FILE__, __LINE__, format, args);\
 }
 
@@ -83,7 +83,7 @@
  * @param args variable size arguments send to printf or NULL.
  */
 #ifdef CLOG_DEBUG
-#define clogDebug(format, args ...) {\
+#define clogDebug(format, args, ...) {\
     clogLog("DEBUG", __FILE__, __LINE__, format, args);\
 }
 #else
