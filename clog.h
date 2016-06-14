@@ -162,7 +162,7 @@ static int clogLog(
     strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
 
     char* base_name = find_base_name_pos(file);
-    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, base_name, line); 
+    fprintf(out, "\n%s %s\t%s:%d ", timeBuffer, level, base_name, line); 
 
 
     va_list args;
