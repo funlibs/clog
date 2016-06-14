@@ -97,9 +97,6 @@ FILE* CLOG_OUT;
 extern "C" {
 #endif // __cplusplus
 
-/**
- * @brief For internal use only.
- */
 static void clogTerminate()
 {
 
@@ -132,9 +129,19 @@ static int clogConfigure(const char* filepath)
 
 }
 
-/**
- * @brief For internal use only.
- */
+static char* find_base_name_pos(char* file)
+{
+    int i = strlen(file);
+    for (i; i >= 0; i--)
+    {
+        if (file[i] == '/')
+            return &file[i+1];
+
+    }
+
+    return &file[0];
+}
+
 static int clogLog(
         char* level,
         char* file,
@@ -142,17 +149,11 @@ static int clogLog(
         const char* format, ...)
 {
 
-
     FILE* out;
-    if (NULL != CLOG_OUT) {
-
+    if (NULL != CLOG_OUT)
         out = CLOG_OUT;
-
-    } else {
-
+    else
         out = stdout;
-
-    }
 
     time_t timer;
     time(&timer);
@@ -160,7 +161,8 @@ static int clogLog(
     char timeBuffer[30];
     strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
 
-    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, file, line); 
+    char* base_name = find_base_name_pos(file);
+    fprintf(out, "\n\n%s\t%s\t%s:%d\n", timeBuffer, level, base_name, line); 
 
 
     va_list args;
