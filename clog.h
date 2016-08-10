@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- 
+
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,8 +41,6 @@
  * See clog.h for documentation.
  */
 
-
-
 /**
  * @def clogError(format, args ...)
  * Log an error message. Format and args are similar to the printf() function
@@ -52,7 +50,6 @@
 #define clogError(format, args, ...) {\
     clogLog("ERROR", __FILE__, __LINE__, format, args);\
 }
-
 
 /**
  * @def clogWarning(format, args ...)
@@ -64,7 +61,6 @@
     clogLog("WARNING", __FILE__, __LINE__, format, args);\
 }
 
-
 /**
  * @def clogInfo(format, args ...)
  * Log a info message. Format and args are similar to the printf() function
@@ -74,7 +70,6 @@
 #define clogInfo(format, args, ...) {\
     clogLog("INFO", __FILE__, __LINE__, format, args);\
 }
-
 
 /**
  * @def clogDebug(format, args ...)
@@ -92,18 +87,15 @@
 
 FILE* CLOG_OUT;
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-static void clogTerminate()
+static void
+clogTerminate()
 {
-
     if (NULL != CLOG_OUT) fclose(CLOG_OUT);
-
 }
-
 
 /**
  * @brief Specify a file insteed of STDOUT to log messages.
@@ -111,12 +103,13 @@ static void clogTerminate()
  * @param filepath the full file name to write on.
  * @returns 0 if succeed, 1 if the file cannot be opened.
  */
-static int clogConfigure(const char* filepath)
+static int
+clogConfigure(const char* filepath)
 {
-
     atexit(clogTerminate);
 
-    if (NULL != CLOG_OUT) fclose(CLOG_OUT);
+    if (NULL != CLOG_OUT)
+        fclose(CLOG_OUT);
 
     FILE* logFile = fopen(filepath, "a");
 
@@ -126,29 +119,27 @@ static int clogConfigure(const char* filepath)
         CLOG_OUT = logFile;
 
     return 0;
-
 }
 
-static char* find_base_name_pos(char* file)
+static char*
+find_base_name_pos(char* file)
 {
     int i = strlen(file);
     for (i; i >= 0; i--)
-    {
         if (file[i] == '/')
             return &file[i+1];
-
-    }
 
     return &file[0];
 }
 
-static int clogLog(
+static int
+clogLog(
         char* level,
         char* file,
         int   line,
-        const char* format, ...)
+        const char* format,
+        ...)
 {
-
     FILE* out;
     if (NULL != CLOG_OUT)
         out = CLOG_OUT;
@@ -162,7 +153,7 @@ static int clogLog(
     strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
 
     char* base_name = find_base_name_pos(file);
-    fprintf(out, "\n%s %s %s:\t%d ", timeBuffer, level, base_name, line); 
+    fprintf(out, "\n%s %s %s:\t%d ", timeBuffer, level, base_name, line);
 
 
     va_list args;
@@ -173,7 +164,6 @@ static int clogLog(
     va_end(args);
 
     return ret;
-
 }
 
 #ifdef __cplusplus
