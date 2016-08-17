@@ -124,8 +124,8 @@ clogConfigure(const char* filepath)
 static char*
 find_base_name_pos(char* file)
 {
-    int i = strlen(file);
-    for (i; i >= 0; i--)
+    int i;
+    for (i = strlen(file); i >= 0; i--)
         if (file[i] == '/')
             return &file[i+1];
 
