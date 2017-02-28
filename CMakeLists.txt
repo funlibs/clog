@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (CLOG)
 
-include_directories (.)
+set (CLOG_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "clog includes")
+include_directories (${CLOG_INCLUDES})
 
 # Tests
 add_executable (clog_test
@@ -10,19 +11,3 @@ add_executable (clog_test
 
 enable_testing()
 add_test (NAME Main          COMMAND clog_test)
-
-# doc
-find_package (Doxygen)
-
-if (DOXYGEN_FOUND)
-
-  configure_file (
-    ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-
-  add_custom_target (clog_doc
-    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-    WORKING DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating API documentation with Doxygen" VERBATIM)
-
-endif (DOXYGEN_FOUND)
