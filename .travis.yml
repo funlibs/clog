@@ -8,9 +8,8 @@ os:
 
 compiler:
     - gcc
-   #- g++
     - clang
 
-script: 
+script:
     - ./configure
-    - cd build && make && make test ARGS=--output-on-failure
+    - cd _build && _make && _make test ARGS=--output-on-failure
