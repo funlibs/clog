@@ -98,20 +98,38 @@ extern "C" {
      * @param filepath the full file name to write on.
      * @returns the file descriptor or NULL if failed (see errno).
      */
-    void* clogSetOutput(const char* filepath);
+    void*
+    clogSetOutputFile(const char* filepath);
 
     /**
      * @brief Specify a file descriptor to log messages, or NULL to disable
      * logs.
      * @param fd a FILE*
      */
-    void clogSetOutputFd(FILE *fd);
+    void
+    clogSetOutputFd(FILE *fd);
 
+    /**
+     * @brief Specify a directory inside wich we can create a rotating file
+     * logger system.
+     * @param dirpath a directory path
+     * @param fileprefix a file prefix
+     * @param maxsize max file size
+     * @param maxfiles max number of files
+     * @return 0 on any failure
+     */
+    int
+    clogSetOutputDir(
+            const char* dirpath,
+            const char* fileprefix,
+            int maxsize,
+            int maxfiles);
 
     /**
      * @brief For internal use only.
      */
-    int clogLog(
+    int
+    clogLog(
             const char* level,
             const char* file,
             int line,

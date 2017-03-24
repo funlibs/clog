@@ -20,7 +20,7 @@ clogSetOutputFd(FILE *fd)
 }
 
 void *
-clogSetOutput(const char* filepath)
+clogSetOutputFile(const char* filepath)
 {
 
     atexit(clogTerminate);
@@ -36,6 +36,15 @@ clogSetOutput(const char* filepath)
 
     return CLOG_OUTPUT;
 
+}
+
+int
+clogSetOutputDir(
+        const char* dirpath,
+        const char* fileprefix,
+        int maxsize,
+        int maxfiles) {
+    return 1;
 }
 
 int clogLog(
