@@ -31,15 +31,13 @@
 #define CLOG_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <time.h>
 
 /**
  * @mainpage
  * See clog.h for documentation.
  */
+
+
 
 /**
  * @def clogError(format, args ...)
@@ -51,6 +49,7 @@
     clogLog("ERROR", __FILE__, __LINE__, format, args);\
 }
 
+
 /**
  * @def clogWarning(format, args ...)
  * Log a warning message. Format and args are similar to the printf() function
@@ -61,6 +60,7 @@
     clogLog("WARNING", __FILE__, __LINE__, format, args);\
 }
 
+
 /**
  * @def clogInfo(format, args ...)
  * Log a info message. Format and args are similar to the printf() function
@@ -70,6 +70,7 @@
 #define clogInfo(format, args, ...) {\
     clogLog("INFO", __FILE__, __LINE__, format, args);\
 }
+
 
 /**
  * @def clogDebug(format, args ...)
@@ -85,86 +86,36 @@
 #define clogDebug(format, ...) {}
 #endif
 
-FILE* CLOG_OUT;
+extern FILE* CLOG_OUTPUT;
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-static void
-clogTerminate()
-{
-    if (NULL != CLOG_OUT) fclose(CLOG_OUT);
-}
+    /**
+     * @brief Specify a file to log messages.
+     * Set filePath as the destination for logs.
+     * @param filepath the full file name to write on.
+     * @returns the file descriptor or NULL if failed (see errno).
+     */
+    void* clogSetOutput(const char* filepath);
 
-/**
- * @brief Specify a file insteed of STDOUT to log messages.
- * Set filePath as the destination for logs.
- * @param filepath the full file name to write on.
- * @returns 0 if succeed, 1 if the file cannot be opened.
- */
-static int
-clogConfigure(const char* filepath)
-{
-    atexit(clogTerminate);
-
-    if (NULL != CLOG_OUT)
-        fclose(CLOG_OUT);
-
-    FILE* logFile = fopen(filepath, "a");
-
-    if (NULL == logFile)
-        return 1;
-    else
-        CLOG_OUT = logFile;
-
-    return 0;
-}
-
-static char*
-find_base_name_pos(char* file)
-{
-    int i;
-    for (i = strlen(file); i >= 0; i--)
-        if (file[i] == '/')
-            return &file[i+1];
-
-    return &file[0];
-}
-
-static int
-clogLog(
-        char* level,
-        char* file,
-        int   line,
-        const char* format,
-        ...)
-{
-    FILE* out;
-    if (NULL != CLOG_OUT)
-        out = CLOG_OUT;
-    else
-        out = stdout;
-
-    time_t timer;
-    time(&timer);
-
-    char timeBuffer[30];
-    strftime(timeBuffer, 30, "%Y/%m/%d %H:%M:%S", localtime(&timer));
-
-    char* base_name = find_base_name_pos(file);
-    fprintf(out, "\n%s %s %s:\t%d ", timeBuffer, level, base_name, line);
+    /**
+     * @brief Specify a file descriptor to log messages, or NULL to disable
+     * logs.
+     * @param fd a FILE*
+     */
+    void clogSetOutputFd(FILE *fd);
 
 
-    va_list args;
-    int ret;
-
-    va_start(args, format);
-    ret = vfprintf(out, format, args);
-    va_end(args);
-
-    return ret;
-}
+    /**
+     * @brief For internal use only.
+     */
+    int clogLog(
+            const char* level,
+            const char* file,
+            int line,
+            const char* format, ...);
 
 #ifdef __cplusplus
 }

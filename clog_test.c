@@ -3,6 +3,7 @@
 int main(int argc, char* argv[])
 {
 
+    clogSetOutputFd(stdout);
     clogError("hello world %s", "jojo");
     clogInfo("hello world %d", 2);
     clogDebug("hello world %d", 1.0);
